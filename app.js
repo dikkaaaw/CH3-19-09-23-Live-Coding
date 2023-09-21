@@ -26,11 +26,6 @@ const tours = JSON.parse(
     `${__dirname}/dev-data/data/tours-simple.json`
   )
 )
-const users = JSON.parse(
-  fs.readFileSync(
-    `${__dirname}/dev-data/data/users.json`
-  )
-)
 
 ///////////////////////////////////
 const getAllTours = (req, res) => {
@@ -76,7 +71,7 @@ const createTour = (req, res) => {
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
-      res.send(201).json({
+      res.status(201).json({
         status: "success",
         data: {
           tour: newData,
@@ -155,6 +150,13 @@ const removeTour = (req, res) => {
 
 ///// USERS ///////
 ///////////////////////////////////
+const users = JSON.parse(
+  fs.readFileSync(
+    `${__dirname}/dev-data/data/users.json`
+  )
+)
+
+//////////////////////////////////
 const getAllUsers = (req, res) => {
   res.status(200).json({
     status: "success",
@@ -167,8 +169,8 @@ const getAllUsers = (req, res) => {
 
 /////////////////////////////////////
 const getUserById = (req, res) => {
-  const id = req.params.id
-  const user = users.find((el) => el.id === id)
+  const id = req.params._id
+  const user = users.find((el) => el._id === id)
 
   if (!user) {
     return res.status(404).json({
@@ -187,21 +189,22 @@ const getUserById = (req, res) => {
 
 /////////////////////////////////
 const createUser = (req, res) => {
-  const newId = users[users.length - 1]
+  const newId = users[users.length - 1]._id + 1
   const newData = Object.assign(
-    { id: newId },
+    { _id: newId },
     req.body
   )
 
   users.push(newData)
+
   fs.writeFile(
     `${__dirname}/dev-data/data/users.json`,
     JSON.stringify(users),
     (err) => {
-      res.send(201).json({
+      res.status(201).json({
         status: "success",
         data: {
-          userr: newData,
+          user: newData,
         },
       })
     }
@@ -210,10 +213,10 @@ const createUser = (req, res) => {
 
 /////////////////////////////////
 const editUser = (req, res) => {
-  const id = req.params.id
+  const id = req.params._id
   //findIndex = -1 (jika data tidak ada)
   const userIndex = users.findIndex(
-    (el) => el.id === id
+    (el) => el._id === id
   )
 
   if (userIndex === -1) {
@@ -246,15 +249,15 @@ const editUser = (req, res) => {
 /////////////////////////////////
 const removeUser = (req, res) => {
   //konversi tipe data string menjadi number
-  const id = req.params.id
+  const id = req.params._id
   const userIndex = users.findIndex(
-    (el) => el.id === id
+    (el) => el._id === id
   )
 
   if (userIndex === -1) {
     return res.status(404).json({
       status: "fail",
-      message: "data not found!",
+      message: "Data not found!",
     })
   }
 
@@ -268,8 +271,7 @@ const removeUser = (req, res) => {
     (err) => {
       res.status(200).json({
         status: "success",
-        message: "berhasil delete data!",
-        data: null,
+        message: "Data berhasil di hapus!",
       })
     }
   )
